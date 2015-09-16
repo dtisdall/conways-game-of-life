@@ -12,28 +12,35 @@ class GameOfLife
 
 	def seed_life
 		a = (0...@total_size).to_a.shuffle.take(@total_size /3)
-		puts a
 		a.each do |index|
 			@cells[index].live!
 		end
 	end
 
 	def tick!
+		count_adj_alive
 		@cells.each {|cell| cell.tick}
 		@generation += 1
 	end
 
 	def display
 		clear_screen!
-		puts "Totals Generations: #{@generation} Created: #{Cell.total_created} Died: #{Cell.total_destroyed}"
-		puts "┌" + ("─" * @size*2) + "┐"
-		@cells.each_slice(25) do |row|
-			print '│'
-			row.each{|cell| print cell.display}
-			puts '│'
-		end
-		puts "└" + ("─" * @size*2) + "┘"
+		print to_s
 	end
+
+	def to_s
+		string = "Totals Gens: #{@generation} Alive: #{Cell.total_living} Created: #{Cell.total_created} Died: #{Cell.total_destroyed}\n"
+		string << "┌" + ("─" * @size*2) + "┐\n"
+		@cells.each_slice(25) do |row|
+			string << '│'
+			row.each{|cell| string << cell.display}
+			string << "│\n"
+		end
+		string << "└" + ("─" * @size*2) + "┘\n"
+		string
+	end
+
+	private 
 
 	def clear_screen!
  	 print "\e[2J"
@@ -46,7 +53,6 @@ class GameOfLife
 			living = 0
 
 			unless y_axis == 0
-
 				living +=1 if get_rows[y_axis -1][x_axis].alive?  #above
 				living +=1 if get_rows[y_axis -1][x_axis -1].alive? unless x_axis == 0 #above to left
 				living +=1 if get_rows[y_axis -1][x_axis +1].alive? unless x_axis == @boundary #above to right
@@ -56,10 +62,9 @@ class GameOfLife
 			living +=1 if get_rows[y_axis][x_axis +1].alive? unless x_axis == @boundary  #right
 
 			unless y_axis == @boundary
-
-			living +=1 if get_rows[y_axis +1][x_axis].alive?  #below
-			living +=1 if get_rows[y_axis +1][x_axis +1].alive? unless x_axis == @boundary #below to right
-			living +=1 if get_rows[y_axis +1][x_axis -1].alive? unless x_axis == 0 #below to left
+				living +=1 if get_rows[y_axis +1][x_axis].alive?  #below
+				living +=1 if get_rows[y_axis +1][x_axis +1].alive? unless x_axis == @boundary #below to right
+				living +=1 if get_rows[y_axis +1][x_axis -1].alive? unless x_axis == 0 #below to left
 			end
 
 			item.living_adj = living
@@ -81,7 +86,6 @@ game.seed_life
 
 1000.times do
 
-game.count_adj_alive
 game.tick!
 game.display
 sleep(0.5)

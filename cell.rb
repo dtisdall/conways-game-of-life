@@ -2,7 +2,6 @@ class Cell
 
 	@@total_created = 0
 	@@total_destroyed = 0
-	@@total_living = 0
 	@@order_created = 0
 
 	def self.total_created
@@ -14,7 +13,7 @@ class Cell
 	end
 
 	def self.total_living
-		@@total_destroyed - @@total_created
+		@@total_created - @@total_destroyed
 	end
 
 	def initialize
@@ -50,13 +49,13 @@ class Cell
 	def life_or_death
 		case @adj
 		when 0..1
-			death
+			death if @living
 		when 2
 			#
 		when 3
 			life unless @living
 		when 4..8
-			death
+			death if @living
 		end
 	end
 
